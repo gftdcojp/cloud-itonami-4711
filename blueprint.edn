@@ -1,0 +1,10 @@
+{:itonami.blueprint/id "cloud-itonami-4711"
+ :itonami.blueprint/name "Community Retail Operations"
+ :itonami.blueprint/isic-rev5 "4711"
+ :itonami.blueprint/domain :commerce/retail
+ :itonami.blueprint/license "AGPL-3.0-or-later"
+ :itonami.blueprint/social-impact [:local-economy :food-security :transparency]
+ :itonami.blueprint/governor :retail-governor
+ :itonami.blueprint/required-technologies [:retail :identity :forms :dmn :bpmn :audit-ledger]
+ :itonami.blueprint/optional-technologies [:optimization]
+ :itonami.blueprint/status :public-oss}
