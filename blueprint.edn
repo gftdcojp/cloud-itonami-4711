@@ -8,4 +8,9 @@
  :itonami.blueprint/required-technologies [:retail :identity :forms :dmn :bpmn :audit-ledger]
  :itonami.blueprint/optional-technologies [:optimization]
  :itonami.blueprint/status :public-oss
- :itonami.blueprint/robotics true}
+ :itonami.blueprint/robotics true
+ :itonami.blueprint/game {:id "retail-shift"
+                          :repo "gftdcojp/network-isekai"
+                          :path "public/games/itonami/retail-shift"
+                          :url "https://isekai.network/itonami/retail-shift"
+                          :adr "ADR-2607031000"}}
