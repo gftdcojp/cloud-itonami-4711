@@ -123,3 +123,30 @@ actuation: a robotic restocking cart or picker placing stock on a shelf must
 have cleared the same `:retail-governor` pricing sign-off a human operator
 would need — the governor does not distinguish between a human hand and a
 robot arm putting a SKU on the shelf.
+
+## Implementation notes (`:implemented`)
+
+The Decision Rule above was published before this actor existed; the actual
+`retailops.governor` implements it faithfully, calling `kotoba-lang/retail`'s
+own validated `ean13-valid?`/`needs-reorder?`/`line-item` functions rather
+than reimplementing them:
+
+- `ean13-invalid-violations` — the EAN-13-checksum check above, delegating to
+  the capability library, evaluated unconditionally on every `:sale/post`.
+- `price-band-violation-violations` — the price-vs-band check above, the
+  FLAGSHIP genuinely new check this vertical adds, grounded in a real
+  4-jurisdiction unit-pricing/price-marking catalog (`retailops.facts`): the
+  US NIST Handbook 130, the UK's Price Marking Order 2004, Germany's
+  Preisangabenverordnung (PAngV), and Japan's own 計量法 (Measurement Act).
+- `sale-total-mismatch-violations` / `reorder-threshold-mismatch-violations`
+  — independent ground-truth recomputes of the sale total and the reorder
+  threshold against the order's own recorded fields.
+- `already-sold-violations` / `already-reordered-violations` — the
+  double-actuation guards every sibling actor in this fleet uses.
+
+`:sale/post` and `:reorder/commit` are the two real-world actuation events
+(`#{:actuation/post-sale :actuation/commit-reorder}`), matching this
+blueprint's own "sale, reorder, or shelf restock" framing above — neither
+ever auto-commits at any phase. Reconciliation/void/cash-discrepancy
+handling (also named in the Decision Rule above) is a follow-up slice, not
+in this R0 build — see README `Business-process coverage`.

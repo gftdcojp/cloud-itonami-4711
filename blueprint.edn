@@ -5,7 +5,7 @@
  :itonami.blueprint/license "AGPL-3.0-or-later"
  :itonami.blueprint/social-impact [:local-economy :food-security :transparency]
  :itonami.blueprint/governor :retail-governor
- :itonami.blueprint/required-technologies [:retail :identity :forms :dmn :bpmn :audit-ledger]
+ :itonami.blueprint/required-technologies [:robotics :retail :identity :forms :dmn :bpmn :audit-ledger]
  :itonami.blueprint/optional-technologies [:optimization]
  :itonami.blueprint/status :public-oss
  :itonami.blueprint/robotics true
@@ -13,4 +13,5 @@
                           :repo "gftdcojp/network-isekai"
                           :path "public/games/itonami/retail-shift"
                           :url "https://isekai.network/itonami/retail-shift"
-                          :adr "ADR-2607031000"}}
+                          :adr "ADR-2607031000"}
+ :itonami.blueprint/maturity :implemented}
