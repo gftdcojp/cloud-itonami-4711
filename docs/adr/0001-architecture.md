@@ -120,11 +120,13 @@ Method of Sale of Commodities, adopted by most states), the UK's Price
 Marking Order 2004, Germany's Preisangabenverordnung (PAngV,
 implementing EU Directive 98/6/EC), and Japan's own 計量法 (Measurement
 Act) unit-price provisions. Unlike some prior repair-shop-cluster
-siblings' own honest single-jurisdiction gap, ALL FOUR seeded
+siblings' own honest single-jurisdiction gap, ALL EIGHT seeded
 jurisdictions actually have a real regime here, reported honestly
 (matching `leathergoods`/9523's own and `ictrepair`/9511's own
 full-coverage sub-citations). Evaluated UNCONDITIONALLY on every
 `:sale/post` (every sale needs a price within its own declared band).
+See "Addendum: IND/SAU/ARE/MEX jurisdiction extension" below for the
+four jurisdictions seeded after this ADR was first written.
 
 ### Decision 7: dedicated double-actuation-guard booleans
 
@@ -199,6 +201,39 @@ sale or auto-committing a reorder).
 - `blueprint.edn` required a field-sync fix (`:robotics` was missing
   from `:required-technologies`) in addition to the `:maturity` flip.
 
+## Addendum: IND/SAU/ARE/MEX jurisdiction extension
+
+`retailops.facts/catalog` grows from 4 to 8 seeded jurisdictions:
+India, Saudi Arabia, UAE and Mexico added alongside the original
+JPN/USA/GBR/DEU, each with a real general consumer-protection AND a
+real, SEPARATE unit-pricing/price-marking citation -- same schema, no
+new fields. Two honesty notes worth recording, because both diverge
+from the "obvious" candidate a less careful pass would have cited:
+
+- **SAU**: Saudi Arabia has no enacted, dedicated "Consumer Protection
+  Law" as of this writing -- one has been in public-consultation draft
+  since April 2022 and was still only "in advanced stages" per the
+  Commerce Minister's September 2024 statement. Citing the draft as if
+  it were live law would be exactly the fabrication this catalog's own
+  discipline forbids. The currently-ENACTED regime is cited instead:
+  the Anti-Commercial Fraud Law (نظام مكافحة الغش التجاري, implementing
+  GCC Unified Law No. 20/2019), enforced by the Ministry of Commerce's
+  General Administration for Combating Commercial Fraud.
+- **MEX**: Mexico's closest statutory analog to "unit pricing" is not
+  a per-unit shelf-price-disclosure rule -- it's a net-content/quantity
+  declaration on packaged-goods labels (NOM-030-SCFI-2006, under the
+  Ley de Infraestructura de la Calidad that replaced the former Ley
+  Federal sobre Metrología y Normalización in 2020). Reported as a
+  quantity-declaration regime, not overstated as a literal price-per-
+  unit-of-measure rule.
+
+Every new entry's `:provenance`/`:price-provenance` URL resolves to an
+official government or standards-body domain (`ccpa.doca.gov.in`,
+`consumeraffairs.gov.in`, `mc.gov.sa`, `saso.gov.sa`, `moet.gov.ae`,
+`uaelegislation.gov.ae`, `profeco.gob.mx`, `economia.gob.mx`), verified
+by direct web research at extension time, never carried over from
+training-data recall alone.
+
 ## References
 
 - `cloud-itonami-isic-6511/docs/adr/0001-architecture.md` (origin of
@@ -212,3 +247,11 @@ sale or auto-committing a reorder).
 - Price Marking Order 2004 (UK)
 - Preisangabenverordnung (PAngV) (Germany)
 - 計量法 (Measurement Act) (Japan)
+- Legal Metrology Act, 2009 + Legal Metrology (Packaged Commodities)
+  Rules, 2011 (India)
+- نظام القياس والمعايرة (Law of Calibration and Measurement) (Saudi
+  Arabia)
+- Federal Decree-Law No. 20 of 2020 Concerning Specifications and
+  Standards (UAE)
+- NOM-030-SCFI-2006 under the Ley de Infraestructura de la Calidad
+  (Mexico)

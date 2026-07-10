@@ -20,10 +20,17 @@
   this table has NO spec-basis, full stop -- the advisor must not
   fabricate one, and the governor holds if it tries. As with
   `leathergoods`/9523's own brand-authenticity sub-citation and
-  `ictrepair`/9511's own media-sanitization sub-citation, ALL FOUR
+  `ictrepair`/9511's own media-sanitization sub-citation, ALL EIGHT
   seeded jurisdictions actually have a real unit-pricing/price-marking
   enforcement regime here, reported honestly rather than forcing an
-  artificial gap.")
+  artificial gap -- including MEX, whose closest statutory analog is a
+  net-content/quantity declaration (NOM-030-SCFI-2006) rather than a
+  literal per-unit shelf price, reported as such rather than
+  overstating the regime, and SAU, whose general consumer-protection
+  citation is the currently-ENACTED Anti-Commercial Fraud Law rather
+  than the still-in-draft 'Consumer Protection Law' (public
+  consultation ongoing as of 2024) -- the not-yet-enacted draft is
+  never cited as if it were live law.")
 
 (def catalog
   "iso3 -> requirement map. `:required-evidence` mirrors the generic
@@ -82,7 +89,55 @@
                               "Grundpreisangabenachweis (unit-pricing-disclosure record)"]
           :price-owner-authority "Bundesministerium für Wirtschaft und Klimaschutz / Gewerbeaufsichtsämter"
           :price-legal-basis "Preisangabenverordnung (PAngV, Price Indication Ordinance, implementing EU Directive 98/6/EC)"
-          :price-provenance "https://www.gesetze-im-internet.de/pangv_2022/"}})
+          :price-provenance "https://www.gesetze-im-internet.de/pangv_2022/"}
+   "IND" {:name "India"
+          :owner-authority "Central Consumer Protection Authority (CCPA), Department of Consumer Affairs, Ministry of Consumer Affairs, Food and Public Distribution"
+          :legal-basis "Consumer Protection Act, 2019 (उपभोक्ता संरक्षण अधिनियम, 2019)"
+          :national-spec "CCPA prohibition of unfair trade practices, misleading advertisements, and defective/deficient goods sold to consumers"
+          :provenance "https://ccpa.doca.gov.in/"
+          :required-evidence ["SKU-registration record"
+                              "Pricing-authorization record"
+                              "Sale record"
+                              "Unit-pricing-disclosure record"]
+          :price-owner-authority "Legal Metrology Division, Department of Consumer Affairs"
+          :price-legal-basis "Legal Metrology Act, 2009 + Legal Metrology (Packaged Commodities) Rules, 2011"
+          :price-provenance "https://consumeraffairs.gov.in/pages/legal-metrology-act"}
+   "SAU" {:name "Saudi Arabia"
+          :owner-authority "وزارة التجارة (Ministry of Commerce) -- الإدارة العامة لمكافحة الغش التجاري (General Administration for Combating Commercial Fraud)"
+          :legal-basis "نظام مكافحة الغش التجاري (Anti-Commercial Fraud Law, implementing GCC Unified Law for Combating Commercial Fraud No. 20/2019) -- the currently-enacted regime; a dedicated 'Consumer Protection Law' remains in public-consultation draft, not cited here"
+          :national-spec "Prohibition of fraudulent/deceptive representation of goods, false advertising, and unlicensed promotions/discounts"
+          :provenance "https://mc.gov.sa/en/About/Departments/cp/Departments/Pages/01.aspx"
+          :required-evidence ["SKU-registration record"
+                              "Pricing-authorization record"
+                              "Sale record"
+                              "Unit-pricing-disclosure record"]
+          :price-owner-authority "الهيئة السعودية للمواصفات والمقاييس والجودة (Saudi Standards, Metrology and Quality Organization, SASO) -- National Measurement and Calibration Center"
+          :price-legal-basis "نظام القياس والمعايرة (Law of Calibration and Measurement) and its Executive Regulation"
+          :price-provenance "https://www.saso.gov.sa/en/about/Systems_and_Regulations/System_Calibration_and_Standards/Pages/scs_3.aspx"}
+   "ARE" {:name "United Arab Emirates"
+          :owner-authority "Ministry of Economy and Tourism (وزارة الاقتصاد والسياحة, renamed from Ministry of Economy in June 2025)"
+          :legal-basis "Federal Law No. 15 of 2020 on Consumer Protection, as amended by Federal Decree-Law No. 5 of 2023 (Executive Regulations effective 14 Oct 2023)"
+          :national-spec "Supplier/advertiser/trade-agent obligations; goods/services must meet published quality and price"
+          :provenance "https://www.moet.gov.ae/en/federal-law-no-15-of-2020-on-consumer-protection"
+          :required-evidence ["SKU-registration record"
+                              "Pricing-authorization record"
+                              "Sale record"
+                              "Unit-pricing-disclosure record"]
+          :price-owner-authority "Ministry of Industry and Advanced Technology (MOIAT, absorbed ESMA's metrology mandate in 2020)"
+          :price-legal-basis "Federal Decree-Law No. 20 of 2020 Concerning Specifications and Standards (Standardization and Metrology Law)"
+          :price-provenance "https://uaelegislation.gov.ae/en/legislations/1982"}
+   "MEX" {:name "Mexico"
+          :owner-authority "Procuraduría Federal del Consumidor (PROFECO)"
+          :legal-basis "Ley Federal de Protección al Consumidor (LFPC)"
+          :national-spec "Total price (incl. taxes) must be displayed and honored (Art. 7/7 Bis); prohibits deceptive advertising"
+          :provenance "https://www.profeco.gob.mx/juridico/pdf/l_lfpc_ultimo_camdip.pdf"
+          :required-evidence ["Registro de SKU (SKU-registration record)"
+                              "Autorización de precio (pricing-authorization record)"
+                              "Registro de venta (sale record)"
+                              "Declaración de contenido neto (unit-pricing-disclosure record)"]
+          :price-owner-authority "Secretaría de Economía (Dirección General de Normas) / PROFECO (joint verification)"
+          :price-legal-basis "Ley de Infraestructura de la Calidad (LIC, 2020, superseded the former Ley Federal sobre Metrología y Normalización) + NOM-030-SCFI-2006 (net-content/quantity declaration on labels)"
+          :price-provenance "https://platiica.economia.gob.mx/normalizacion/nom-030-scfi-2006/"}})
 
 (defn spec-basis
   "The jurisdiction's requirement map, or nil -- nil means NO spec-basis,
@@ -125,7 +180,7 @@
   "The jurisdiction's unit-pricing/price-marking requirement map, or
   nil -- nil means this jurisdiction has NO formal statutory
   unit-pricing/price-marking regime this catalog is aware of. In this
-  R0 catalog all four seeded jurisdictions actually have one (unlike
+  R0 catalog all eight seeded jurisdictions actually have one (unlike
   some prior siblings' own honest single-jurisdiction gap), reported
   honestly."
   [iso3]
