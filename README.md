@@ -170,7 +170,7 @@ of the generic robotics/identity/forms/dmn/bpmn/audit-ledger stack.
 |---|---|
 | `src/retailops/store.cljc` | **Store** protocol -- `MemStore` ‖ `DatomicStore` (`langchain.db`) + append-only audit ledger + sale-posting AND reorder-commitment history (dual history, matching every sibling actor's own shape). The double-actuation guard checks dedicated `:sale-posted?`/`:reorder-committed?` booleans rather than a `:status` value |
 | `src/retailops/registry.cljc` | Sale-posting/reorder-commitment draft records, wrapping `kotoba.retail`'s own `ean13-valid?`/`needs-reorder?`/`line-item` functions rather than reimplementing them; `sale-total-matches-claim?` is the ground-truth-recompute discipline every sibling actor's parts-cost check establishes, reapplied to a retail sale line |
-| `src/retailops/facts.cljc` | Per-jurisdiction consumer-protection AND unit-pricing/price-marking catalog with an official spec-basis citation per entry, honest coverage reporting -- ALL FOUR seeded jurisdictions have a unit-pricing sub-citation here |
+| `src/retailops/facts.cljc` | Per-jurisdiction consumer-protection AND unit-pricing/price-marking catalog with an official spec-basis citation per entry, honest coverage reporting -- ALL EIGHT seeded jurisdictions have a unit-pricing sub-citation here |
 | `src/retailops/retailopsllm.cljc` | **RetailOps-LLM** -- `mock-advisor` ‖ `llm-advisor`; intake/jurisdiction-assessment/sale-posting/reorder-commitment proposals |
 | `src/retailops/governor.cljc` | **Retail Governor** -- 6 HARD checks (spec-basis · evidence-incomplete · sale-total-mismatch · ean13-invalid, capability-lib reuse, the 71st unconditional-evaluation-discipline grounding · price-band-violation, FLAGSHIP NEW, the 72nd grounding · reorder-threshold-mismatch) + 2 double-actuation guards + 1 soft (confidence/actuation gate) |
 | `src/retailops/phase.cljc` | **Phase 0→3** -- read-only → assisted intake → assisted assess → supervised (sale posting/reorder commitment always human; order intake is the ONLY auto-eligible op, no direct capital risk) |
@@ -204,15 +204,20 @@ establish.
 
 `retailops.facts/coverage` reports how many requested jurisdictions
 actually have an official spec-basis in `retailops.facts/catalog` --
-currently 4 seeded (JPN, USA, GBR, DEU) out of ~194 jurisdictions
-worldwide. This is a starting catalog to prove the governor contract
-end-to-end, not a claim of global coverage. Adding a jurisdiction is
-additive: one map entry in `retailops.facts/catalog`, citing a real
-official source -- never fabricate a jurisdiction's requirements to
-make coverage look bigger. Note that the unit-pricing sub-citation is
-FULL coverage rather than a gap: ALL FOUR seeded jurisdictions (JPN,
-USA, GBR, DEU) actually have a real unit-pricing/price-marking
-enforcement regime, reported honestly.
+currently 8 seeded (JPN, USA, GBR, DEU, IND, SAU, ARE, MEX) out of
+~194 jurisdictions worldwide. This is a starting catalog to prove the
+governor contract end-to-end, not a claim of global coverage. Adding
+a jurisdiction is additive: one map entry in `retailops.facts/catalog`,
+citing a real official source -- never fabricate a jurisdiction's
+requirements to make coverage look bigger. Note that the unit-pricing
+sub-citation is FULL coverage rather than a gap: ALL EIGHT seeded
+jurisdictions (JPN, USA, GBR, DEU, IND, SAU, ARE, MEX) actually have a
+real unit-pricing/price-marking enforcement regime, reported honestly
+-- including SAU (whose general consumer-protection citation is the
+currently-enacted Anti-Commercial Fraud Law, not the still-draft
+"Consumer Protection Law") and MEX (whose unit-pricing analog is a
+net-content/quantity declaration, NOM-030-SCFI-2006, not a literal
+per-unit shelf price), both reported as such rather than overstated.
 
 ## Maturity
 

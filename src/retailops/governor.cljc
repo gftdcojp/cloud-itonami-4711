@@ -107,12 +107,14 @@
                                        Order 2004, Germany's
                                        Preisangabenverordnung (PAngV,
                                        implementing EU Directive
-                                       98/6/EC), and Japan's own 計量法
+                                       98/6/EC), Japan's own 計量法
                                        (Measurement Act) unit-price
-                                       provisions -- ALL FOUR seeded
-                                       jurisdictions actually have a
-                                       real regime here, reported
-                                       honestly (matching
+                                       provisions, and India/Saudi
+                                       Arabia/UAE/Mexico's own seeded
+                                       regimes (`retailops.facts`) --
+                                       ALL EIGHT seeded jurisdictions
+                                       actually have a real regime here,
+                                       reported honestly (matching
                                        `leathergoods`/9523's own and
                                        `ictrepair`/9511's own full-
                                        coverage sub-citations rather
