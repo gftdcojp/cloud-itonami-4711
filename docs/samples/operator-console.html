@@ -1,16 +1,90 @@
-<html><head><meta charset="utf-8"><title>cloud-itonami · retail</title><style>table { width: 100%; border-collapse: collapse; font-size: 14px; }
+<html><head><meta charset="utf-8"><title>cloud-itonami-isic-4711 &middot; retail sale in non-specialized stores</title><style>
+table { width: 100%; border-collapse: collapse; font-size: 14px; }
 .ok { color: #137a3f; }
 body { font-family: system-ui,-apple-system,sans-serif; margin: 0; color: #1a1a1a; background: #fafafa; }
 header.bar { display: flex; align-items: center; gap: 12px; padding: 12px 20px; background: #fff; border-bottom: 1px solid #e5e5e5; }
 th, td { text-align: left; padding: 8px 10px; border-bottom: 1px solid #f0f0f0; }
 h2 { margin-top: 0; font-size: 15px; }
-td.amt { font-variant-numeric: tabular-nums; text-align: right; }
 .warn { color: #b25c00; background: #fff8e1; padding: 2px 6px; border-radius: 4px; }
 main { max-width: 980px; margin: 24px auto; padding: 0 20px; }
 header.bar h1 { font-size: 18px; margin: 0; font-weight: 600; }
-.muted { color: #888; }
+.muted { color: #888; font-size: 13px; }
 .critical { color: #fff; background: #b3261e; padding: 2px 6px; border-radius: 4px; font-weight: 600; }
 .card { background: #fff; border: 1px solid #e5e5e5; border-radius: 8px; padding: 16px; margin-bottom: 16px; }
 .err { color: #b3261e; background: #fbe9e7; padding: 2px 6px; border-radius: 4px; }
 th { font-weight: 600; color: #555; font-size: 12px; text-transform: uppercase; letter-spacing: 0.04em; }
-header.bar .badge { margin-left: auto; font-size: 12px; color: #666; }</style></head><body><header class="bar"><h1>Community Retail — Operator Console</h1><span class="badge">read-only · governor-gated</span></header><main><section class="card"><h2>Inventory</h2><table><thead><tr><th>SKU</th><th>Location</th><th class="amt">Qty</th><th class="amt">Reorder at</th><th>Status</th></tr></thead><tbody><tr><td>S1</td><td>L1</td><td class="amt">3</td><td class="amt">5</td><td><span class="warn">reorder</span></td></tr><tr><td>S2</td><td>L1</td><td class="amt">20</td><td class="amt">5</td><td><span class="ok">ok</span></td></tr></tbody></table></section><section class="card"><h2>Receipt R1</h2><table><thead><tr><th>SKU</th><th class="amt">Price</th><th class="amt">Qty</th><th class="amt">Net</th></tr></thead><tbody><tr><td>S1</td><td class="amt">200</td><td class="amt">2</td><td class="amt">400</td></tr></tbody></table><p><strong>Net: </strong>400 USD · Tax: 0 USD · Total: 400 USD</p></section></main></body></html>
+header.bar .badge { margin-left: auto; font-size: 12px; color: #666; }
+code { font-size: 12px; background: #f4f4f4; padding: 1px 4px; border-radius: 3px; }
+</style></head><body>
+<header class="bar">
+  <h1>Retail sale in non-specialized stores (ISIC 4711) — Operator Console</h1>
+  <span class="badge">read-only sample · governor-gated · sale posting/reorder commitment always human-approved</span>
+</header>
+<main>
+  <section class="card">
+    <h2>Orders</h2>
+    <p class="muted">Demo snapshot — build-time-generated from <code>retailops.store</code> via <code>retailops.render-html</code> (<code>clojure -M:dev:render-html</code>), regenerated nightly.</p>
+    <table>
+      <thead><tr><th>Order</th><th>SKU</th><th>Kind</th><th>Jurisdiction</th><th>Unit price (band)</th><th>EAN-13</th><th>Stock / reorder-at</th><th>Last op status</th></tr></thead>
+      <tbody>
+        <tr><td>order-1</td><td>Rice 5kg bag</td><td>sale</td><td>JPN</td><td>10.0 (5.0&ndash;15.0)</td><td>4006381333931</td><td>50 / 10</td><td><span class="ok">committed</span></td></tr>
+        <tr><td>order-2</td><td>Canned soup</td><td>sale</td><td>ATL</td><td>3.0 (1.0&ndash;5.0)</td><td>4006381333931</td><td>80 / 20</td><td><span class="critical">HARD hold &middot; no-spec-basis</span></td></tr>
+        <tr><td>order-3</td><td>Cooking oil 1L</td><td>sale</td><td>JPN</td><td>10.0 (5.0&ndash;15.0)</td><td>4006381333931</td><td>40 / 10</td><td><span class="critical">HARD hold &middot; sale-total-mismatch</span></td></tr>
+        <tr><td>order-4</td><td>Instant noodles (12-pack)</td><td>sale</td><td>JPN</td><td>10.0 (5.0&ndash;15.0)</td><td>4006381333932</td><td>60 / 15</td><td><span class="critical">HARD hold &middot; ean13-invalid</span></td></tr>
+        <tr><td>order-5</td><td>Fresh milk 1L</td><td>sale</td><td>JPN</td><td>20.0 (5.0&ndash;15.0)</td><td>4006381333931</td><td>30 / 10</td><td><span class="critical">HARD hold &middot; price-band-violation</span></td></tr>
+        <tr><td>order-6</td><td>Bottled water 24-pack</td><td>reorder</td><td>JPN</td><td>8.0 (5.0&ndash;15.0)</td><td>4006381333931</td><td>50 / 10</td><td><span class="critical">HARD hold &middot; reorder-threshold-mismatch</span></td></tr>
+        <tr><td>order-7</td><td>Toilet paper (bulk pack)</td><td>reorder</td><td>JPN</td><td>12.0 (5.0&ndash;15.0)</td><td>4006381333931</td><td>8 / 10</td><td><span class="ok">committed</span></td></tr>
+      </tbody>
+    </table>
+  </section>
+  <section class="card">
+    <h2>Draft sale-posting / reorder-commitment records</h2>
+    <p class="muted">Unsigned drafts only — the shop's own act of posting/committing is outside this actor's authority (see README <code>Actuation</code>).</p>
+    <table>
+      <thead><tr><th>Kind</th><th>Record id</th><th>Order</th><th>Jurisdiction</th><th>Status</th></tr></thead>
+      <tbody>
+        <tr><td>sale-posting</td><td>JPN-SAL-000000</td><td>order-1</td><td>JPN</td><td><span class="ok">immutable draft</span></td></tr>
+        <tr><td>reorder-commitment</td><td>JPN-ROR-000000</td><td>order-7</td><td>JPN</td><td><span class="ok">immutable draft</span></td></tr>
+      </tbody>
+    </table>
+  </section>
+  <section class="card">
+    <h2>Action gate (Retail Governor)</h2>
+    <p class="muted">HARD holds cannot be overridden by a human approver. Jurisdiction spec-basis, sale-total arithmetic, GS1 EAN-13 checksum, price-band membership and reorder-threshold justification are independently recomputed, never trusted from the advisor's proposal; a real sale posting or reorder commitment is always a human shop operator's call, at every rollout phase.</p>
+    <table>
+      <thead><tr><th>Op</th><th>Gate</th></tr></thead>
+      <tbody>
+        <tr><td><code>:order/intake</code></td><td><span class="ok">phase-3 auto-commit when clean, no capital risk yet</span></td></tr>
+        <tr><td><code>:reorder/receive</code></td><td><span class="ok">phase-3 auto-commit when clean, no capital risk yet &middot; optional cold-chain-handoff/storage-zone temperature-window check is HARD when both fields are present</span></td></tr>
+        <tr><td><code>:jurisdiction/assess</code></td><td><span class="warn">ALWAYS human approval &middot; spec-basis independently checked against <code>retailops.facts</code>, never fabricated</span></td></tr>
+        <tr><td><code>:sale/post</code></td><td><span class="warn">ALWAYS human approval &middot; real POS act (actuation/post-sale) &middot; claimed-total arithmetic, GS1 EAN-13 checksum and price-band membership all independently reverified, never auto at any phase</span></td></tr>
+        <tr><td><code>:reorder/commit</code></td><td><span class="warn">ALWAYS human approval &middot; real supplier act (actuation/commit-reorder) &middot; reorder-threshold + double-commit guard independently enforced, never auto at any phase</span></td></tr>
+      </tbody>
+    </table>
+  </section>
+  <section class="card">
+    <h2>Audit ledger (this run)</h2>
+    <p class="muted">Append-only decision-fact log — every proposal, hold and commit this scenario produced.</p>
+    <table>
+      <thead><tr><th>Fact</th><th>Op</th><th>Subject</th><th>Basis</th></tr></thead>
+      <tbody>
+        <tr><td>committed</td><td><code>intake</code></td><td>order-1</td><td>id, sku-name</td></tr>
+        <tr><td>committed</td><td><code>assess</code></td><td>order-1</td><td>不当景品類及び不当表示防止法 (景品表示法, Act against Unjustifiable Premiums and Misleading Representations), https://www.caa.go.jp/policies/policy/representation/</td></tr>
+        <tr><td>committed</td><td><code>post</code></td><td>order-1</td><td>order-1</td></tr>
+        <tr><td>committed</td><td><code>intake</code></td><td>order-7</td><td>id, sku-name</td></tr>
+        <tr><td>committed</td><td><code>assess</code></td><td>order-7</td><td>不当景品類及び不当表示防止法 (景品表示法, Act against Unjustifiable Premiums and Misleading Representations), https://www.caa.go.jp/policies/policy/representation/</td></tr>
+        <tr><td>committed</td><td><code>commit</code></td><td>order-7</td><td>order-7</td></tr>
+        <tr><td>governor-hold</td><td><code>assess</code></td><td>order-2</td><td>no-spec-basis</td></tr>
+        <tr><td>committed</td><td><code>assess</code></td><td>order-3</td><td>不当景品類及び不当表示防止法 (景品表示法, Act against Unjustifiable Premiums and Misleading Representations), https://www.caa.go.jp/policies/policy/representation/</td></tr>
+        <tr><td>governor-hold</td><td><code>post</code></td><td>order-3</td><td>sale-total-mismatch</td></tr>
+        <tr><td>committed</td><td><code>assess</code></td><td>order-4</td><td>不当景品類及び不当表示防止法 (景品表示法, Act against Unjustifiable Premiums and Misleading Representations), https://www.caa.go.jp/policies/policy/representation/</td></tr>
+        <tr><td>governor-hold</td><td><code>post</code></td><td>order-4</td><td>ean13-invalid</td></tr>
+        <tr><td>committed</td><td><code>assess</code></td><td>order-5</td><td>不当景品類及び不当表示防止法 (景品表示法, Act against Unjustifiable Premiums and Misleading Representations), https://www.caa.go.jp/policies/policy/representation/</td></tr>
+        <tr><td>governor-hold</td><td><code>post</code></td><td>order-5</td><td>price-band-violation</td></tr>
+        <tr><td>committed</td><td><code>assess</code></td><td>order-6</td><td>不当景品類及び不当表示防止法 (景品表示法, Act against Unjustifiable Premiums and Misleading Representations), https://www.caa.go.jp/policies/policy/representation/</td></tr>
+        <tr><td>governor-hold</td><td><code>commit</code></td><td>order-6</td><td>reorder-threshold-mismatch</td></tr>
+      </tbody>
+    </table>
+  </section>
+</main>
+</body></html>
