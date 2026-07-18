@@ -187,3 +187,41 @@
   (when-let [sb (spec-basis iso3)]
     (when (:price-owner-authority sb)
       (select-keys sb [:price-owner-authority :price-legal-basis :price-provenance]))))
+
+;; ────── Cross-Actor Handoff Receipt (jsic-4721 -> isic-4711) ──────
+;;
+;; A `:reorder/receive` proposal's `:value` MAY carry a `:handoff` record
+;; -- the superproject ADR-2800000500 wire shape an upstream cold-chain
+;; 3PL such as cloud-itonami-jsic-4721 populates on its own outbound
+;; dispatch (same field names as that repo's own ADR-2607177600
+;; `:handoff`, no shared code, no shared store):
+;;
+;;   {:handoff/id "..."
+;;    :handoff/source-actor "cloud-itonami-jsic-4721"
+;;    :handoff/batch-id "..."
+;;    :handoff/product-type-id :coldchain/c3-chilled
+;;    :handoff/cold-chain-temp-min-c 2.0
+;;    :handoff/cold-chain-temp-max-c 10.0
+;;    :handoff/quantity-kg 120.5
+;;    :handoff/dispatched-at-iso "..."}
+;;
+;; alongside a `:storage-zone-id` naming which of THIS store's own
+;; cold-storage zones (below) the delivery is being placed into.
+;; `retailops.registry/handoff-window-overlaps-storage-zone?` (via
+;; `retailops.governor/cold-chain-handoff-violations`) independently
+;; verifies the two are temperature-compatible -- no shared code with
+;; jsic-4721, an independent implementation of the same asymmetric-
+;; optional, overlap-not-subset reasoning that repo's own
+;; `coldchain.facts/handoff-compatible-with-commodity-class?` uses.
+
+(def cold-storage-zones
+  "storage-zone-id -> {:storage-temp-min-c .. :storage-temp-max-c ..}.
+  This store's own cold-storage equipment reference bands --
+  independent reference data, domain-illustrative, not a shared shape
+  with cloud-itonami-jsic-4721's own `coldchain.facts/commodity-
+  classes` (a different actor's different equipment)."
+  {:refrigerated {:storage-temp-min-c 0.0 :storage-temp-max-c 4.0}
+   :frozen {:storage-temp-min-c -25.0 :storage-temp-max-c -15.0}})
+
+(defn cold-storage-zone-by-id [id]
+  (get cold-storage-zones id))

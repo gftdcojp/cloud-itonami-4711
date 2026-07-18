@@ -152,6 +152,55 @@
       (is (some #{:already-reordered} (-> (store/ledger db) last :basis)))
       (is (= 1 (count (store/reorder-history db))) "still only the one earlier reorder"))))
 
+;; ----------------------------- cross-actor handoff receipt (jsic-4721 -> isic-4711) -----------------------------
+;;
+;; superproject ADR-2800000500. `:reorder/receive` is the receiving-side
+;; counterpart to `:reorder/commit` -- a pure directory-upsert
+;; (`:order/intake`-shaped, `:stake nil`) that may auto-commit at phase
+;; 3 when clean, but a HARD cold-chain-handoff mismatch always holds
+;; regardless.
+
+(def ^:private frozen-fish-handoff
+  "A handoff record an upstream cold-chain 3PL (e.g. cloud-itonami-
+  jsic-4721) issues for a deep-frozen delivery."
+  {:handoff/id "h-1"
+   :handoff/source-actor "cloud-itonami-jsic-4721"
+   :handoff/batch-id "lot-001"
+   :handoff/product-type-id :coldchain/f4-deep-frozen
+   :handoff/cold-chain-temp-min-c -22.0
+   :handoff/cold-chain-temp-max-c -18.0
+   :handoff/quantity-kg 80.0
+   :handoff/dispatched-at-iso "2026-07-18T00:00:00Z"})
+
+(deftest reorder-receive-handoff-incompatible-with-storage-zone-is-held
+  (testing "a deep-frozen handoff placed into the refrigerated zone -> HOLD (temperature-tier mismatch)"
+    (let [[db actor] (fresh)
+          res (exec-op actor "t13"
+                      {:op :reorder/receive :subject "order-7"
+                       :patch {:id "order-7" :handoff frozen-fish-handoff :storage-zone-id :refrigerated}}
+                      operator)]
+      (is (= :hold (get-in res [:state :disposition])))
+      (is (some #{:handoff-cold-chain-window-incompatible-with-storage-zone} (-> (store/ledger db) first :basis))))))
+
+(deftest reorder-receive-handoff-compatible-with-storage-zone-auto-commits
+  (testing "a deep-frozen handoff placed into the frozen zone -> auto-commit at phase 3 (no capital risk)"
+    (let [[db actor] (fresh)
+          res (exec-op actor "t14"
+                      {:op :reorder/receive :subject "order-7"
+                       :patch {:id "order-7" :handoff frozen-fish-handoff :storage-zone-id :frozen}}
+                      operator)]
+      (is (= :commit (get-in res [:state :disposition])))
+      (is (= :frozen (:storage-zone-id (store/order db "order-7"))) "SSoT actually updated"))))
+
+(deftest reorder-receive-without-handoff-auto-commits
+  (testing "a :reorder/receive proposal without a :handoff record is unaffected (backward compatible)"
+    (let [[db actor] (fresh)
+          res (exec-op actor "t15"
+                      {:op :reorder/receive :subject "order-6" :patch {:id "order-6" :current-stock 60}}
+                      operator)]
+      (is (= :commit (get-in res [:state :disposition])))
+      (is (= 60 (:current-stock (store/order db "order-6")))))))
+
 (deftest every-decision-leaves-one-ledger-fact
   (testing "write-only-through-ledger: N operations -> N ledger facts"
     (let [[db actor] (fresh)]

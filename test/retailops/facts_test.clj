@@ -37,3 +37,12 @@
     (is (facts/required-evidence-satisfied? "JPN" all))
     (is (not (facts/required-evidence-satisfied? "JPN" (rest all))))
     (is (not (facts/required-evidence-satisfied? "ATL" all)) "no spec-basis -> never satisfied")))
+
+;; ----------------------------- cold-storage-zones (jsic-4721 -> isic-4711) -----------------------------
+
+(deftest cold-storage-zone-by-id-known-zones
+  (is (= 4.0 (:storage-temp-max-c (facts/cold-storage-zone-by-id :refrigerated))))
+  (is (= -15.0 (:storage-temp-max-c (facts/cold-storage-zone-by-id :frozen)))))
+
+(deftest cold-storage-zone-by-id-unknown-returns-nil
+  (is (nil? (facts/cold-storage-zone-by-id :nonexistent))))

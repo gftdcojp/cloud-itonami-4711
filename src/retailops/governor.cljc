@@ -148,7 +148,23 @@
   off dedicated `:sale-posted?`/`:reorder-committed?` facts (never a
   `:status` value) -- the SAME 'check a dedicated boolean, not status'
   discipline every prior governor's guards establish, informed by
-  `cloud-itonami-isic-6492`'s status-lifecycle bug (ADR-2607071320)."
+  `cloud-itonami-isic-6492`'s status-lifecycle bug (ADR-2607071320).
+
+  A further additive HARD guard, `cold-chain-handoff-violations`
+  (superproject ADR-2800000500): a `:reorder/receive` (or any other)
+  proposal whose `:value` carries BOTH a `:handoff` record (the wire
+  shape an upstream cold-chain 3PL such as cloud-itonami-jsic-4721
+  populates on ITS OWN outbound dispatch -- same field names as that
+  repo's own ADR-2607177600 `:handoff`, no shared code, no shared
+  store) AND a `:storage-zone-id` naming which of this store's own
+  cold-storage zones (`retailops.facts/cold-storage-zones`) the
+  delivery is being placed into is independently checked via
+  `retailops.registry/handoff-window-overlaps-storage-zone?` --
+  catching a temperature-tier mismatch (e.g. a frozen delivery placed
+  into a refrigerated zone) before it reaches this actor's own store.
+  Optional on both fields, same asymmetric discipline as every other
+  cross-actor reference check in this fleet: a proposal missing either
+  field is never held on this basis."
   (:require [retailops.facts :as facts]
             [retailops.registry :as registry]
             [retailops.store :as store]))
@@ -256,6 +272,30 @@
       [{:rule :already-sold
         :detail (str subject " は既に販売計上済み")}])))
 
+(defn- cold-chain-handoff-violations
+  "HARD, additive: when a proposal's `:value` carries BOTH a `:handoff`
+  record and a `:storage-zone-id`, independently verify the handoff's
+  declared cold-chain-temp-min-c/max-c window overlaps that storage
+  zone's own reference band (`retailops.facts/cold-storage-zones`).
+  Optional on both fields -- a proposal missing either is never held
+  on this basis (same asymmetric discipline as every cross-actor
+  reference check in this fleet, e.g. cloud-itonami-jsic-4721's own
+  `lot-physical-violations`). Evaluated unconditionally on every
+  proposal, not gated to a specific op -- the same 'runs everywhere,
+  no-ops without both optional fields' shape every other check that
+  is not itself op-gated in this ns uses."
+  [proposal]
+  (let [handoff (get-in proposal [:value :handoff])
+        zone-id (get-in proposal [:value :storage-zone-id])
+        zone (facts/cold-storage-zone-by-id zone-id)
+        handoff-min (:handoff/cold-chain-temp-min-c handoff)
+        handoff-max (:handoff/cold-chain-temp-max-c handoff)]
+    (when (and (map? handoff) (some? zone) (some? handoff-min) (some? handoff-max)
+               (not (registry/handoff-window-overlaps-storage-zone? handoff-min handoff-max zone)))
+      [{:rule :handoff-cold-chain-window-incompatible-with-storage-zone
+        :detail (str "受領handoffの宣言コールドチェーン窓(" handoff-min "℃~" handoff-max
+                      "℃)が割り当てられた保管ゾーン(" (pr-str zone-id) ")の運用帯と重ならない -- 温度帯不整合")}])))
+
 (defn- already-reordered-violations
   "For `:reorder/commit`, refuses to commit the SAME order's reorder
   twice, off a dedicated `:reorder-committed?` fact (never a `:status`
@@ -279,7 +319,8 @@
                            (price-band-violation-violations request st)
                            (reorder-threshold-mismatch-violations request st)
                            (already-sold-violations request st)
-                           (already-reordered-violations request st)))
+                           (already-reordered-violations request st)
+                           (cold-chain-handoff-violations proposal)))
         conf (:confidence proposal 0.0)
         low? (< conf confidence-floor)
         stakes? (boolean (high-stakes (:stake proposal)))

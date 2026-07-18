@@ -77,6 +77,25 @@
   [{:keys [unit-price price-band-min price-band-max]}]
   (and (>= unit-price price-band-min) (<= unit-price price-band-max)))
 
+(defn handoff-window-overlaps-storage-zone?
+  "Positive-sense convenience predicate: does the declared handoff's
+  cold-chain-temp-min-c/max-c window OVERLAP `zone`'s own
+  storage-temp-min-c/max-c band at all? Mirrors cloud-itonami-
+  jsic-4721's own `coldchain.facts/handoff-compatible-with-commodity-
+  class?` overlap reasoning (a storage zone describes a whole
+  equipment's operating band, not one delivery's declared safety
+  margin, so a strict subset check in either direction would reject
+  nearly every real assignment) -- an independent implementation, no
+  shared code."
+  [handoff-min-c handoff-max-c zone]
+  (boolean
+   (and (some? zone)
+        (some? handoff-min-c)
+        (some? handoff-max-c)
+        (<= handoff-min-c handoff-max-c)
+        (<= handoff-min-c (:storage-temp-max-c zone))
+        (<= (:storage-temp-min-c zone) handoff-max-c))))
+
 (defn needs-reorder?
   "Delegates to `kotoba.retail/needs-reorder?` via a `kotoba.retail/
   inventory` record built from `order`'s own `:current-stock` and

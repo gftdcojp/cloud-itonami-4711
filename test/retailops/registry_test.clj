@@ -1,5 +1,6 @@
 (ns retailops.registry-test
   (:require [clojure.test :refer [deftest is]]
+            [retailops.facts :as facts]
             [retailops.registry :as r]))
 
 ;; ----------------------------- ean13-valid? -----------------------------
@@ -36,6 +37,24 @@
 
 (deftest does-not-need-reorder-when-stock-above-threshold
   (is (not (r/needs-reorder? {:sku-id "sku-6" :current-stock 50 :reorder-at 10}))))
+
+;; ----------------------------- handoff-window-overlaps-storage-zone? -----------------------------
+
+(deftest handoff-window-overlaps-storage-zone-test
+  (let [refrigerated (facts/cold-storage-zone-by-id :refrigerated)
+        frozen (facts/cold-storage-zone-by-id :frozen)]
+    (is (true? (r/handoff-window-overlaps-storage-zone? 2.0 10.0 refrigerated))
+        "chilled handoff window overlapping the refrigerated zone is compatible")
+    (is (false? (r/handoff-window-overlaps-storage-zone? 2.0 10.0 frozen))
+        "chilled handoff window assigned to the frozen zone is incompatible")
+    (is (true? (r/handoff-window-overlaps-storage-zone? -22.0 -18.0 frozen))
+        "deep-frozen handoff window overlapping the frozen zone is compatible")
+    (is (false? (r/handoff-window-overlaps-storage-zone? -22.0 -18.0 refrigerated))
+        "deep-frozen handoff window assigned to the refrigerated zone is incompatible")
+    (is (false? (r/handoff-window-overlaps-storage-zone? 3.0 0.0 refrigerated))
+        "inverted handoff window (min > max) is incompatible")
+    (is (false? (r/handoff-window-overlaps-storage-zone? 0.0 3.0 nil))
+        "nil storage zone is incompatible")))
 
 ;; ----------------------------- register-sale-completion -----------------------------
 

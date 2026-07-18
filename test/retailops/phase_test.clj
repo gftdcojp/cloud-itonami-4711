@@ -21,8 +21,14 @@
   (is (empty? (:writes (get phase/phases 0)))))
 
 (deftest phase-3-auto-commits-only-no-capital-risk-ops
-  (testing ":order/intake carries no direct capital risk -- auto-eligible; it is the ONLY auto-eligible op in this domain"
-    (is (= #{:order/intake} (:auto (get phase/phases 3))))))
+  (testing ":order/intake and :reorder/receive carry no direct capital risk -- auto-eligible; these are the ONLY auto-eligible ops in this domain"
+    (is (= #{:order/intake :reorder/receive} (:auto (get phase/phases 3))))))
+
+(deftest reorder-receive-never-auto-before-phase-3
+  (testing "phase 1/2 require approval for :reorder/receive even though it is a low-risk logging op"
+    (is (= :escalate (:disposition (phase/gate 1 {:op :reorder/receive} :commit))))
+    (is (= :escalate (:disposition (phase/gate 2 {:op :reorder/receive} :commit))))
+    (is (= :commit (:disposition (phase/gate 3 {:op :reorder/receive} :commit))))))
 
 (deftest gate-hold-always-wins
   (is (= :hold (:disposition (phase/gate 3 {:op :order/intake} :hold)))))

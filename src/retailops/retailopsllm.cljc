@@ -4,7 +4,9 @@
 
   It normalizes order intake, drafts a per-jurisdiction consumer-
   protection/unit-pricing evidence checklist, drafts the sale-posting
-  action, and drafts the reorder-commitment action. CRITICAL: it is a
+  action, drafts the reorder-commitment action, and normalizes
+  reorder-receipt intake (an inbound delivery, e.g. from an upstream
+  cold-chain 3PL such as cloud-itonami-jsic-4721). CRITICAL: it is a
   smart-but-untrusted advisor. It returns a *proposal* (with a
   rationale + the fields it cited), never a committed record or a real
   sale/reorder. Every output is censored downstream by `retailops.
@@ -44,6 +46,28 @@
    :value      patch
    :stake      nil
    :confidence 0.97})
+
+(defn- propose-reorder-receipt
+  "Directory upsert for an inbound delivery -- pure normalization of an
+  observed physical receipt (e.g. from an upstream cold-chain 3PL such
+  as cloud-itonami-jsic-4721 fulfilling a committed reorder), never a
+  new fact the LLM invents. Same shape/stakes as `normalize-intake`
+  (`:effect :order/upsert`, `:stake nil`, high confidence) -- this is
+  the receiving-side counterpart to `:reorder/commit`, not itself a
+  new real-world actuation. `patch` MAY carry an optional cross-actor
+  `:handoff` record (superproject ADR-2800000500 wire shape) plus a
+  `:storage-zone-id` naming which of this store's own cold-storage
+  zones (`retailops.facts/cold-storage-zones`) the delivery is being
+  placed into -- `retailops.governor/cold-chain-handoff-violations`
+  independently verifies the two are temperature-compatible."
+  [_db {:keys [patch]}]
+  {:summary    (str "入荷記録更新: " (pr-str (keys patch)))
+   :rationale  "上流サプライヤー(冷蔵倉庫3PL等)からの入荷観察記録の正規化のみ。新規事実の生成なし。"
+   :cites      (vec (keys patch))
+   :effect     :order/upsert
+   :value      patch
+   :stake      nil
+   :confidence 0.95})
 
 (defn- assess-jurisdiction
   "Per-jurisdiction consumer-protection/unit-pricing evidence
@@ -136,6 +160,7 @@
     :jurisdiction/assess            (assess-jurisdiction db request)
     :sale/post                          (propose-sale-posting db request)
     :reorder/commit                         (propose-reorder-commitment db request)
+    :reorder/receive                            (propose-reorder-receipt db request)
     {:summary "未対応の操作" :rationale (str op) :cites []
      :effect :noop :stake nil :confidence 0.0}))
 
